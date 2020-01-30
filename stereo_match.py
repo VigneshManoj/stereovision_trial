@@ -35,8 +35,8 @@ def write_ply(fn, verts, colors):
 
 def main():
     print('loading images...')
-    imgL = cv.pyrDown(cv.imread(cv.samples.findFile('/home/vignesh/PycharmProjects/stereovision/calib_images/obj_left_new.png')))  # downscale images for faster processing
-    imgR = cv.pyrDown(cv.imread(cv.samples.findFile('/home/vignesh/PycharmProjects/stereovision/calib_images/obj_right_new.png')))
+    imgL = cv.pyrDown(cv.imread('/home/vignesh/PycharmProjects/stereovision_trial/calib_images/obj_left_new.png')) # downscale images for faster processing
+    imgR = cv.pyrDown(cv.imread('/home/vignesh/PycharmProjects/stereovision_trial/calib_images/obj_right_new.png'))
 
     # disparity range is tuned for 'aloe' image pair
     window_size = 3

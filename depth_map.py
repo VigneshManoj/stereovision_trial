@@ -2,11 +2,11 @@ import numpy as np
 import cv2
 from matplotlib import pyplot as plt
 
-# imgL = cv2.imread('/home/vignesh/PycharmProjects/stereovision/calib_images/tsukuba_l.png', 0)
-# imgR = cv2.imread('/home/vignesh/PycharmProjects/stereovision/calib_images/tsukuba_r.png', 0)
+# imgL = cv2.imread('/home/vignesh/PycharmProjects/stereovision_trial/calib_images/tsukuba_l.png', 0)
+# imgR = cv2.imread('/home/vignesh/PycharmProjects/stereovision_trial/calib_images/tsukuba_r.png', 0)
 
-imgL = cv2.imread('/home/vignesh/PycharmProjects/stereovision/calib_images/obj_left_new.png', 0)
-imgR = cv2.imread('/home/vignesh/PycharmProjects/stereovision/calib_images/obj_right_new.png', 0)
+imgL = cv2.imread('/home/vignesh/PycharmProjects/stereovision_trial/calib_images/obj_left_new.png', 0)
+imgR = cv2.imread('/home/vignesh/PycharmProjects/stereovision_trial/calib_images/obj_right_new.png', 0)
 
 # Colormap Possible values are: Accent, Accent_r, Blues, Blues_r, BrBG, BrBG_r, BuGn, BuGn_r, BuPu, BuPu_r, CMRmap,
 # CMRmap_r, Dark2, Dark2_r, GnBu, GnBu_r, Greens, Greens_r, Greys, Greys_r, OrRd, OrRd_r, Oranges, Oranges_r, PRGn,
