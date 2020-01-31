@@ -11,6 +11,7 @@ from __future__ import print_function
 
 import numpy as np
 import cv2 as cv
+import control_utils as PU
 
 ply_header = '''ply
 format ascii 1.0
@@ -24,6 +25,10 @@ property uchar blue
 end_header
 '''
 
+# Initialization of TK App
+PU.init()
+App = PU.get_app_handle()
+
 def write_ply(fn, verts, colors):
     verts = verts.reshape(-1, 3)
     colors = colors.reshape(-1, 3)
@@ -34,50 +39,54 @@ def write_ply(fn, verts, colors):
 
 
 def main():
-    print('loading images...')
-    imgL = cv.pyrDown(cv.imread('/home/vignesh/PycharmProjects/stereovision_trial/calib_images/obj_left_new.png')) # downscale images for faster processing
-    imgR = cv.pyrDown(cv.imread('/home/vignesh/PycharmProjects/stereovision_trial/calib_images/obj_right_new.png'))
+    while True:
 
-    # disparity range is tuned for 'aloe' image pair
-    window_size = 3
-    min_disp = 16
-    num_disp = 112-min_disp
-    stereo = cv.StereoSGBM_create(minDisparity = min_disp,
-        numDisparities = num_disp,
-        blockSize = 9,
-        P1 = 8*3*window_size**2,
-        P2 = 32*3*window_size**2,
-        disp12MaxDiff = 1,
-        uniquenessRatio = 10,
-        speckleWindowSize = 100,
-        speckleRange = 32
-    )
+        App.update()
+        print('loading images...')
+        imgL = cv.pyrDown(cv.imread('/home/vignesh/PycharmProjects/stereovision_trial/calib_images/obj_03_left.png'))
+        # downscale images for faster processing
+        imgR = cv.pyrDown(cv.imread('/home/vignesh/PycharmProjects/stereovision_trial/calib_images/obj_03_right.png'))
 
-    print('computing disparity...')
-    disp = stereo.compute(imgL, imgR).astype(np.float32) / 16.0
+        window_size = PU.sad_window_size
+        min_disp = PU.min_disparity
+        num_disp = PU.num_disparity
+        stereo = cv.StereoSGBM_create(minDisparity = min_disp,
+            numDisparities = num_disp,
+            blockSize = PU.block_size,
+            P1 = PU.p1,
+            P2 = PU.p2,
+            disp12MaxDiff =PU.disp12maxdiff,
+            uniquenessRatio = PU.uniqueness_ratio,
+            speckleWindowSize = PU.speckle_window_size,
+            speckleRange = PU.speckle_range
+        )
 
-    print('generating 3d point cloud...',)
-    h, w = imgL.shape[:2]
-    f = 0.8*w                          # guess for focal length
-    Q = np.float32([[1, 0, 0, -0.5*w],
-                    [0,-1, 0,  0.5*h], # turn points 180 deg around x-axis,
-                    [0, 0, 0,     -f], # so that y-axis looks up
-                    [0, 0, 1,      0]])
-    points = cv.reprojectImageTo3D(disp, Q)
-    colors = cv.cvtColor(imgL, cv.COLOR_BGR2RGB)
-    mask = disp > disp.min()
-    out_points = points[mask]
-    out_colors = colors[mask]
-    out_fn = 'out.ply'
-    write_ply(out_fn, out_points, out_colors)
-    print('%s saved' % out_fn)
 
-    # cv.imshow('left', imgL)
-    # cv.imshow('right', imgR)
-    cv.imshow('disparity', (disp-min_disp)/num_disp)
-    cv.waitKey()
+        print('computing disparity...')
+        disp = stereo.compute(imgL, imgR).astype(np.float32) / 16.0
 
-    print('Done')
+        print('generating 3d point cloud...',)
+        h, w = imgL.shape[:2]
+        f = 0.8*w                          # guess for focal length
+        Q = np.float32([[1, 0, 0, -0.5*w],
+                        [0,-1, 0,  0.5*h], # turn points 180 deg around x-axis,
+                        [0, 0, 0,     -f], # so that y-axis looks up
+                        [0, 0, 1,      0]])
+        points = cv.reprojectImageTo3D(disp, Q)
+        colors = cv.cvtColor(imgL, cv.COLOR_BGR2RGB)
+        mask = disp > disp.min()
+        out_points = points[mask]
+        out_colors = colors[mask]
+        out_fn = 'out.ply'
+        write_ply(out_fn, out_points, out_colors)
+        print('%s saved' % out_fn)
+
+        # cv.imshow('left', imgL)
+        # cv.imshow('right', imgR)
+        cv.imshow('disparity', (disp-min_disp)/num_disp)
+        cv.waitKey(5)
+
+        print('Done')
 
 
 if __name__ == '__main__':
